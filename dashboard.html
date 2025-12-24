@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Interactive Enrollment Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 2em;
+      text-align: center;
+    }
+    h1 { margin-bottom: 0.2em; }
+    p.timestamp { margin-top: 0; font-size: 0.9em; color: #666; }
+    .charts {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 2em;
+      margin-bottom: 2em;
+    }
+    .chart-box {
+      flex: 1 1 300px;
+      max-width: 400px;
+    }
+    .chart-box canvas { width: 100% !important; height: auto !important; }
+    table {
+      margin: 0 auto;
+      border-collapse: collapse;
+      width: 90%;
+      max-width: 600px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 0.5em;
+      text-align: center;
+    }
+    th { background: #eee; }
+  </style>
+</head>
+<body>
+  <h1>DISCO Enrollment Dashboard</h1>
+  <p class="timestamp">Last updated: 2025-12-23 16:59:54</p>
+
+  <div class="charts">
+    <div class="chart-box">
+      <h2>Total</h2>
+      <canvas id="chartTotal"></canvas>
+    </div>
+    <div class="chart-box">
+      <h2>By Age</h2>
+      <canvas id="chartBands"></canvas>
+    </div>
+  </div>
+
+  <h2>Raw Numbers</h2>
+  <table>
+    <tr>
+      <th>Group</th><th># Contacted</th><th># Enrolled</th><th>% Enrolled</th><th># Visits</th>
+    </tr>
+    <!-- Total row -->
+    <tr>
+      <td><strong>Total</strong></td>
+      <td>1</td>
+      <td>1</td>
+      <td>100.0%</td>
+      <td>1</td>
+    </tr>
+    <!-- Age bands -->
+    <tr><td>10–14</td><td>0</td><td>0</td><td>0%</td><td>0</td></tr><tr><td>15–18</td><td>1</td><td>1</td><td>100.0%</td><td>1</td></tr><tr><td>19–25</td><td>0</td><td>0</td><td>0%</td><td>0</td></tr>
+  </table>
+
+  <script>
+  (function() {
+    const raw = {"total": {"contacted": 1, "enrolled": 1, "pct": 100.0, "visits": 1}, "bands": {"10\u201314": {"contacted": 0, "enrolled": 0, "pct": 0, "visits": 0}, "15\u201318": {"contacted": 1, "enrolled": 1, "pct": 100.0, "visits": 1}, "19\u201325": {"contacted": 0, "enrolled": 0, "pct": 0, "visits": 0}}};
+    // TOTAL chart
+    const t = raw.total;
+    const ctxT = document.getElementById('chartTotal').getContext('2d');
+    new Chart(ctxT, {
+      data: {
+        labels: ['Contacted','Enrolled','Visits'],
+        datasets: [
+          {
+            type: 'bar',
+            label: 'Count',
+            data: [t.contacted, t.enrolled, t.visits],
+            backgroundColor: ['#36a2eb','#4bc0c0','#ff9f40']
+          },
+          {
+            type: 'line',
+            label: '% Enrolled',
+            data: [null, t.pct, null],       // only show at the "Enrolled" tick
+            borderColor: '#9966ff',
+            backgroundColor: 'rgba(153,102,255,0.2)',
+            yAxisID: 'pctAxis',
+            tension: 0.4,
+            pointRadius: 6
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        interaction: { mode: 'index', intersect: false },
+        scales: {
+          y: {
+            beginAtZero: true,
+            position: 'left',
+            title: { display: true, text: 'Count' }
+          },
+          pctAxis: {
+            beginAtZero: true,
+            max: 100,
+            position: 'right',
+            grid: { drawOnChartArea: false },
+            title: { display: true, text: '% Enrolled' }
+          }
+        },
+        plugins: {
+          title: { display: false },
+          legend: { position: 'bottom' }
+        }
+      }
+    });
+
+    // AGE BANDS chart
+    const labelsB = Object.keys(raw.bands);
+    const contactedB = labelsB.map(l => raw.bands[l].contacted);
+    const enrolledB  = labelsB.map(l => raw.bands[l].enrolled);
+    const visitsB    = labelsB.map(l => raw.bands[l].visits);
+    const pctB       = labelsB.map(l => raw.bands[l].pct);
+
+    const ctxB = document.getElementById('chartBands').getContext('2d');
+    new Chart(ctxB, {
+      type: 'bar',
+      data: {
+        labels: labelsB,
+        datasets: [
+          {
+            label: '# Contacted',
+            data: contactedB,
+            backgroundColor: 'rgba(54,162,235,0.6)'
+          },
+          {
+            label: '# Enrolled',
+            data: enrolledB,
+            backgroundColor: 'rgba(75,192,192,0.6)'
+          },
+          {
+            label: '# Visits',
+            data: visitsB,
+            backgroundColor: 'rgba(255,159,64,0.6)'
+          },
+          {
+            type: 'line',
+            label: '% Enrolled',
+            data: pctB,
+            borderColor: 'rgba(153,102,255,0.8)',
+            backgroundColor:'rgba(153,102,255,0.2)',
+            yAxisID: 'pctAxisB',
+            tension: 0.4,
+            pointRadius: 4
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        interaction: { mode: 'index', intersect: false },
+        scales: {
+          y: {
+            beginAtZero: true,
+            position: 'left',
+            title: { display: true, text: 'Count' }
+          },
+          pctAxisB: {
+            beginAtZero: true,
+            max: 100,
+            position: 'right',
+            grid: { drawOnChartArea: false },
+            title: { display: true, text: '% Enrolled' }
+          }
+        },
+        plugins: {
+          title: { display: false },
+          legend: { position: 'bottom' }
+        }
+      }
+    });
+  })();
+  </script>
+</body>
+</html>
