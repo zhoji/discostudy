@@ -40,7 +40,7 @@
 </head>
 <body>
   <h1>DISCO Enrollment Dashboard</h1>
-  <p class="timestamp">Last updated: 2026-03-03 02:00:10</p>
+  <p class="timestamp">Last updated: 2026-03-04 02:00:09</p>
 
   <div class="charts">
     <div class="chart-box">
@@ -61,18 +61,18 @@
     <!-- Total row -->
     <tr>
       <td><strong>Total</strong></td>
-      <td>104</td>
-      <td>19</td>
-      <td>18.3%</td>
+      <td>106</td>
+      <td>23</td>
+      <td>21.7%</td>
       <td>13</td>
     </tr>
     <!-- Age bands -->
-    <tr><td>10–14</td><td>53</td><td>5</td><td>9.4%</td><td>5</td></tr><tr><td>15–18</td><td>34</td><td>11</td><td>32.4%</td><td>6</td></tr><tr><td>19–25</td><td>12</td><td>3</td><td>25.0%</td><td>2</td></tr><tr><td>Unknown</td><td>5</td><td>0</td><td>0.0%</td><td>0</td></tr>
+    <tr><td>10–14</td><td>55</td><td>8</td><td>14.5%</td><td>5</td></tr><tr><td>15–18</td><td>34</td><td>12</td><td>35.3%</td><td>6</td></tr><tr><td>19–25</td><td>12</td><td>3</td><td>25.0%</td><td>2</td></tr><tr><td>Unknown</td><td>5</td><td>0</td><td>0.0%</td><td>0</td></tr>
   </table>
 
   <script>
   (function() {
-    const raw = {"total": {"contacted": 104, "enrolled": 19, "pct": 18.3, "visits": 13}, "bands": {"10\u201314": {"contacted": 53, "enrolled": 5, "pct": 9.4, "visits": 5}, "15\u201318": {"contacted": 34, "enrolled": 11, "pct": 32.4, "visits": 6}, "19\u201325": {"contacted": 12, "enrolled": 3, "pct": 25.0, "visits": 2}, "Unknown": {"contacted": 5, "enrolled": 0, "pct": 0.0, "visits": 0}}};
+    const raw = {"total": {"contacted": 106, "enrolled": 23, "pct": 21.7, "visits": 13}, "bands": {"10\u201314": {"contacted": 55, "enrolled": 8, "pct": 14.5, "visits": 5}, "15\u201318": {"contacted": 34, "enrolled": 12, "pct": 35.3, "visits": 6}, "19\u201325": {"contacted": 12, "enrolled": 3, "pct": 25.0, "visits": 2}, "Unknown": {"contacted": 5, "enrolled": 0, "pct": 0.0, "visits": 0}}};
     // TOTAL chart
     const t = raw.total;
     const ctxT = document.getElementById('chartTotal').getContext('2d');
