@@ -2,16 +2,29 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>DISCO Enrollment Dashboard</title>
+  <title>Interactive Enrollment Dashboard</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body {
-      font-family: sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       margin: 2em;
+      color: #222;
+      background: #fafafa;
       text-align: center;
     }
-    h1 { margin-bottom: 0.2em; }
-    p.timestamp { margin-top: 0; font-size: 0.9em; color: #666; }
+    h1 { 
+      margin-bottom: 0.2em;
+      font-weight: 600;
+    }
+    h2 { 
+      font-size: 1.1em;
+      margin-bottom: 0.5em;
+    }
+    p.timestamp {
+      margin-top: 0;
+      font-size: 0.85em;
+      color: #777;
+    }
     .charts {
       display: flex;
       justify-content: center;
@@ -20,27 +33,64 @@
       margin-bottom: 2em;
     }
     .chart-box {
-      flex: 1 1 300px;
-      max-width: 400px;
+      flex: 1 1 320px;
+      max-width: 420px;
+      background: white;
+      padding: 1em;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
     }
-    .chart-box canvas { width: 100% !important; height: auto !important; }
+    .chart-box canvas { 
+      width: 100% !important; 
+      height: auto !important; 
+      margin-bottom: 4px;
+    }
+    .note {
+      margin-top: 6px;
+      text-align: right;
+      font-size: 0.75em;
+      color: #888;
+      font-style: italic;
+    }
     table {
       margin: 0 auto;
       border-collapse: collapse;
       width: 90%;
-      max-width: 600px;
+      max-width: 650px;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
     }
     th, td {
-      border: 1px solid #ccc;
-      padding: 0.5em;
+      border: 1px solid #eee;
+      padding: 0.6em;
       text-align: center;
     }
-    th { background: #eee; }
+    th { 
+      background: #f4f6f8;
+      font-weight: 600;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    body > h1 {
+      margin-bottom: 0.5em;
+    }
   </style>
 </head>
 <body>
   <h1>DISCO Enrollment Dashboard</h1>
-  <p class="timestamp">Last updated: 2026-04-24 11:31:24</p>
+  <p class="timestamp">Last updated: 2026-04-24 11:56:03</p>
+
+  <div class="chart-box" style="max-width:900px;margin:0 auto 2em;">
+    <h2>Cumulative Enrollment</h2>
+    <canvas id="chartCumulative"></canvas>
+    <div id="missingNote" class="note"></div>
+  </div>
 
   <div class="charts">
     <div class="chart-box">
@@ -50,6 +100,7 @@
     <div class="chart-box">
       <h2>By Age</h2>
       <canvas id="chartBands"></canvas>
+      <div id="unknownAgeNote" class="note"></div>
     </div>
   </div>
 
@@ -61,10 +112,10 @@
     <!-- Total row -->
     <tr>
       <td><strong>Total</strong></td>
-      <td>177</td>
-      <td>46</td>
-      <td>26.0%</td>
-      <td>35</td>
+      <td><strong>177</strong></td>
+      <td><strong>46</strong></td>
+      <td><strong>26.0%</strong></td>
+      <td><strong>35</strong></td>
     </tr>
     <!-- Age bands -->
     <tr><td>10–14</td><td>91</td><td>18</td><td>19.8%</td><td>14</td></tr><tr><td>15–18</td><td>61</td><td>19</td><td>31.1%</td><td>15</td></tr><tr><td>19–25</td><td>20</td><td>9</td><td>45.0%</td><td>6</td></tr><tr><td>Unknown</td><td>5</td><td>0</td><td>0.0%</td><td>0</td></tr>
@@ -72,7 +123,47 @@
 
   <script>
   (function() {
-    const raw = {"total": {"contacted": 177, "enrolled": 46, "pct": 26.0, "visits": 35}, "bands": {"10\u201314": {"contacted": 91, "enrolled": 18, "pct": 19.8, "visits": 14}, "15\u201318": {"contacted": 61, "enrolled": 19, "pct": 31.1, "visits": 15}, "19\u201325": {"contacted": 20, "enrolled": 9, "pct": 45.0, "visits": 6}, "Unknown": {"contacted": 5, "enrolled": 0, "pct": 0.0, "visits": 0}}};
+    const raw = {"total": {"contacted": 177, "enrolled": 46, "pct": 26.0, "visits": 35}, "bands": {"10\u201314": {"contacted": 91, "enrolled": 18, "pct": 19.8, "visits": 14}, "15\u201318": {"contacted": 61, "enrolled": 19, "pct": 31.1, "visits": 15}, "19\u201325": {"contacted": 20, "enrolled": 9, "pct": 45.0, "visits": 6}}, "cumulative": {"dates": ["Dec '25", "Jan '26", "Feb '26", "Mar '26", "Apr '26", "May '26", "Jun '26", "Jul '26", "Aug '26", "Sep '26", "Oct '26", "Nov '26", "Dec '26", "Jan '27", "Feb '27", "Mar '27", "Apr '27", "May '27", "Jun '27", "Jul '27", "Aug '27", "Sep '27", "Oct '27", "Nov '27", "Dec '27", "Jan '28", "Feb '28", "Mar '28", "Apr '28", "May '28", "Jun '28", "Jul '28", "Aug '28", "Sep '28", "Oct '28", "Nov '28", "Dec '28", "Jan '29", "Feb '29", "Mar '29", "Apr '29", "May '29", "Jun '29", "Jul '29", "Aug '29", "Sep '29", "Oct '29", "Nov '29", "Dec '29", "Jan '30", "Feb '30", "Mar '30", "Apr '30", "May '30", "Jun '30", "Jul '30", "Aug '30", "Sep '30", "Oct '30", "Nov '30", "Dec '30"], "actual": [3, 5, 18, 30, 40, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null], "target": [0, 6, 12, 18, 24, 30, 36, 42, 48, 54, 60, 66, 72, 78, 84, 90, 96, 102, 108, 114, 120, 126, 132, 138, 144, 150, 156, 162, 168, 174, 180, 186, 192, 198, 204, 210, 216, 222, 228, 234, 240, 246, 252, 258, 264, 270, 276, 282, 288, 294, 300, 306, 312, 318, 324, 330, 336, 342, 348, 354, 360], "missing": 6}, "unknown_count": 5};
+    const c = raw.cumulative;
+
+    new Chart(document.getElementById('chartCumulative'), {
+      type: 'line',
+      data: {
+        labels: c.dates,
+        datasets: [
+          {
+            label: 'Actual',
+            data: c.actual,
+            borderColor: '#2563eb',
+            backgroundColor: 'rgba(37,99,235,0.1)',
+            tension: 0.3,
+            pointRadius: 2,
+            pointHoverRadius: 4,
+            fill: true
+          },
+          {
+            label: 'Target',
+            data: c.target,
+            borderColor: '#ef4444',
+            borderDash: [6,4],
+            tension: 0,
+            pointRadius: 0
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        interaction: { mode: 'index', intersect: false }
+      }
+    });
+
+    // missing note
+    if (c.missing > 0) {
+          var suffix = (c.missing === 1 ? '' : 's');
+          document.getElementById("missingNote").textContent =
+            "* " + c.missing + " enrolled subject" + suffix + " missing consent date";
+        }
+
     // TOTAL chart
     const t = raw.total;
     const ctxT = document.getElementById('chartTotal').getContext('2d');
@@ -185,6 +276,14 @@
         }
       }
     });
+
+    var unknown = raw.unknown_count;
+
+    if (unknown > 0) {
+      var suffix = (unknown === 1 ? '' : 's');
+      document.getElementById("unknownAgeNote").textContent =
+        "* " + unknown + " subject" + suffix + " with unknown age";
+    }
   })();
   </script>
 </body>
