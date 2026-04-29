@@ -59,15 +59,21 @@
     }
     table {
       margin: 0 auto;
+      margin-bottom: 0.5em;
       border-collapse: collapse;
       width: 90%;
       min-width: 500px;
       max-width: 650px;
       background: white;
       border-radius: 10px;
-      overflow: hidden;
+      border-collapse: separate;
+      border-spacing: 0;
       box-shadow: 0 2px 6px rgba(0,0,0,0.05);
     }
+    th:first-child { border-top-left-radius: 10px; }
+    th:last-child  { border-top-right-radius: 10px; }
+    tr:last-child td:first-child { border-bottom-left-radius: 10px; }
+    tr:last-child td:last-child  { border-bottom-right-radius: 10px; }
     th, td {
       border: 1px solid #eee;
       padding: 0.6em;
@@ -85,9 +91,12 @@
     }
     .table-wrap {
       overflow-x: auto;
+      overflow-y: visible;
       position: relative;
       -webkit-overflow-scrolling: touch;
       scrollbar-width: thin;
+      display: block;
+      touch-action: pan-x;
     }
     .table-wrap::-webkit-scrollbar {
       height: 6px;
@@ -166,11 +175,21 @@
     .chart-footer .note {
       text-align: left;
     }
+    .footer {
+      margin-bottom: 1em;
+      margin-top: 2em;
+      padding-top: 1em;
+      font-size: 0.7em;
+      color: #999;
+      text-align: center;
+      border-top: 1px solid #eee;
+      line-height: 1.4;
+    }
   </style>
 </head>
 <body>
   <h1>DISCO Enrollment Dashboard</h1>
-  <p class="timestamp">Last updated: 2026-04-29 14:57:04</p>
+  <p class="timestamp">Last updated: 2026-04-29 15:27:12</p>
 
   <div class="chart-box" style="max-width:900px;margin:0 auto 2em;">
     <h2>Cumulative Enrollment</h2>
@@ -211,6 +230,12 @@
       <tr><td>10–14</td><td>91</td><td>18</td><td>19.8%</td><td>14</td></tr><tr><td>15–18</td><td>61</td><td>19</td><td>31.1%</td><td>15</td></tr><tr><td>19–25</td><td>28</td><td>14</td><td>50.0%</td><td>6</td></tr><tr><td>Unknown</td><td>10</td><td>0</td><td>0.0%</td><td>0</td></tr>
     </table>
   </div>
+
+  <footer class="footer">
+    <div>
+      Internal use only · Maintained by Jiamin Zhou @ Fields Lab, UCSF
+    </div>
+  </footer>
 
   <script>
   (function() {
@@ -459,5 +484,7 @@
     }
   })();
   </script>
+
+  
 </body>
 </html>
