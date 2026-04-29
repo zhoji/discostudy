@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Interactive Enrollment Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DISCO Enrollment Dashboard</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body {
@@ -11,6 +12,7 @@
       color: #222;
       background: #fafafa;
       text-align: center;
+      font-size: 16px;
     }
     h1 { 
       margin-bottom: 0.2em;
@@ -29,12 +31,12 @@
       display: flex;
       justify-content: center;
       flex-wrap: wrap;
-      gap: 2em;
+      gap: 1em;
       margin-bottom: 2em;
     }
     .chart-box {
-      flex: 1 1 320px;
-      max-width: 420px;
+      flex: 1 1 100%;
+      max-width: 100%;
       background: white;
       padding: 1em;
       border-radius: 12px;
@@ -59,6 +61,7 @@
       margin: 0 auto;
       border-collapse: collapse;
       width: 90%;
+      min-width: 500px;
       max-width: 650px;
       background: white;
       border-radius: 10px;
@@ -80,16 +83,102 @@
     body > h1 {
       margin-bottom: 0.5em;
     }
+    .table-wrap {
+      overflow-x: auto;
+      position: relative;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+    }
+    .table-wrap::-webkit-scrollbar {
+      height: 6px;
+    }
+    .table-wrap::-webkit-scrollbar-thumb {
+      background: #ddd;
+      border-radius: 4px;
+    }
+    .table-wrap::before,
+    .table-wrap::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 20px;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0;
+      transition: opacity 0.15s ease;
+    }
+    .table-wrap.fade-left::before {
+      left: 0;
+      background: linear-gradient(to right, #fafafa, rgba(250,250,250,0));
+      opacity: 1;
+    }
+    .table-wrap.fade-right::after {
+      right: 0;
+      background: linear-gradient(to left, #fafafa, rgba(250,250,250,0));
+      opacity: 1;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    @media (min-width: 768px) {
+      .chart-box {
+        flex: 1 1 320px;
+        max-width: 420px;
+      }
+    }
+    @media (max-width: 600px) {
+      body { margin: 1em; }
+      .chart-box { padding: 0.8em; }
+      .note { font-size: 0.7em; }
+      .chart-box[style] {
+        max-width: 100% !important;
+        margin: 0 0 2em 0 !important;
+      }
+    }
+    @media (max-width: 480px) {
+      body { font-size: 14px; }
+      h1 { font-size: 1.3em; }
+      h2 { font-size: 1em; }
+    }
+    button {
+      align-self: flex-end;
+      margin-top: 6px;
+      padding: 6px 10px;
+      font-size: 0.75em;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      color: #444;
+      cursor: pointer;
+      transition: background 0.15s ease;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    button:hover {
+      background: #f3f4f6;
+    }
+    .chart-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 6px;
+    }
+    .chart-footer .note {
+      text-align: left;
+    }
   </style>
 </head>
 <body>
   <h1>DISCO Enrollment Dashboard</h1>
-  <p class="timestamp">Last updated: 2026-04-24 11:56:03</p>
+  <p class="timestamp">Last updated: 2026-04-29 14:57:04</p>
 
   <div class="chart-box" style="max-width:900px;margin:0 auto 2em;">
     <h2>Cumulative Enrollment</h2>
     <canvas id="chartCumulative"></canvas>
-    <div id="missingNote" class="note"></div>
+    <div class="chart-footer">
+      <div id="missingNote" class="note"></div>
+      <button id="toggleZoom" onclick="toggleZoom()">Show Full</button>
+    </div>
   </div>
 
   <div class="charts">
@@ -105,28 +194,42 @@
   </div>
 
   <h2>Raw Numbers</h2>
-  <table>
-    <tr>
-      <th>Group</th><th># Contacted</th><th># Enrolled</th><th>% Enrolled</th><th># Visits</th>
-    </tr>
-    <!-- Total row -->
-    <tr>
-      <td><strong>Total</strong></td>
-      <td><strong>177</strong></td>
-      <td><strong>46</strong></td>
-      <td><strong>26.0%</strong></td>
-      <td><strong>35</strong></td>
-    </tr>
-    <!-- Age bands -->
-    <tr><td>10–14</td><td>91</td><td>18</td><td>19.8%</td><td>14</td></tr><tr><td>15–18</td><td>61</td><td>19</td><td>31.1%</td><td>15</td></tr><tr><td>19–25</td><td>20</td><td>9</td><td>45.0%</td><td>6</td></tr><tr><td>Unknown</td><td>5</td><td>0</td><td>0.0%</td><td>0</td></tr>
-  </table>
+  <div class="table-wrap">
+    <table>
+      <tr>
+        <th>Group</th><th># Contacted</th><th># Enrolled</th><th>% Enrolled</th><th># Visits</th>
+      </tr>
+      <!-- Total row -->
+      <tr>
+        <td><strong>Total</strong></td>
+        <td><strong>190</strong></td>
+        <td><strong>51</strong></td>
+        <td><strong>26.8%</strong></td>
+        <td><strong>35</strong></td>
+      </tr>
+      <!-- Age bands -->
+      <tr><td>10–14</td><td>91</td><td>18</td><td>19.8%</td><td>14</td></tr><tr><td>15–18</td><td>61</td><td>19</td><td>31.1%</td><td>15</td></tr><tr><td>19–25</td><td>28</td><td>14</td><td>50.0%</td><td>6</td></tr><tr><td>Unknown</td><td>10</td><td>0</td><td>0.0%</td><td>0</td></tr>
+    </table>
+  </div>
 
   <script>
   (function() {
-    const raw = {"total": {"contacted": 177, "enrolled": 46, "pct": 26.0, "visits": 35}, "bands": {"10\u201314": {"contacted": 91, "enrolled": 18, "pct": 19.8, "visits": 14}, "15\u201318": {"contacted": 61, "enrolled": 19, "pct": 31.1, "visits": 15}, "19\u201325": {"contacted": 20, "enrolled": 9, "pct": 45.0, "visits": 6}}, "cumulative": {"dates": ["Dec '25", "Jan '26", "Feb '26", "Mar '26", "Apr '26", "May '26", "Jun '26", "Jul '26", "Aug '26", "Sep '26", "Oct '26", "Nov '26", "Dec '26", "Jan '27", "Feb '27", "Mar '27", "Apr '27", "May '27", "Jun '27", "Jul '27", "Aug '27", "Sep '27", "Oct '27", "Nov '27", "Dec '27", "Jan '28", "Feb '28", "Mar '28", "Apr '28", "May '28", "Jun '28", "Jul '28", "Aug '28", "Sep '28", "Oct '28", "Nov '28", "Dec '28", "Jan '29", "Feb '29", "Mar '29", "Apr '29", "May '29", "Jun '29", "Jul '29", "Aug '29", "Sep '29", "Oct '29", "Nov '29", "Dec '29", "Jan '30", "Feb '30", "Mar '30", "Apr '30", "May '30", "Jun '30", "Jul '30", "Aug '30", "Sep '30", "Oct '30", "Nov '30", "Dec '30"], "actual": [3, 5, 18, 30, 40, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null], "target": [0, 6, 12, 18, 24, 30, 36, 42, 48, 54, 60, 66, 72, 78, 84, 90, 96, 102, 108, 114, 120, 126, 132, 138, 144, 150, 156, 162, 168, 174, 180, 186, 192, 198, 204, 210, 216, 222, 228, 234, 240, 246, 252, 258, 264, 270, 276, 282, 288, 294, 300, 306, 312, 318, 324, 330, 336, 342, 348, 354, 360], "missing": 6}, "unknown_count": 5};
+    const raw = {"total": {"contacted": 190, "enrolled": 51, "pct": 26.8, "visits": 35}, "bands": {"10\u201314": {"contacted": 91, "enrolled": 18, "pct": 19.8, "visits": 14}, "15\u201318": {"contacted": 61, "enrolled": 19, "pct": 31.1, "visits": 15}, "19\u201325": {"contacted": 28, "enrolled": 14, "pct": 50.0, "visits": 6}}, "cumulative": {"dates": ["2025-12-01", "2026-01-01", "2026-02-01", "2026-03-01", "2026-04-01", "2026-05-01", "2026-06-01", "2026-07-01", "2026-08-01", "2026-09-01", "2026-10-01", "2026-11-01", "2026-12-01", "2027-01-01", "2027-02-01", "2027-03-01", "2027-04-01", "2027-05-01", "2027-06-01", "2027-07-01", "2027-08-01", "2027-09-01", "2027-10-01", "2027-11-01", "2027-12-01", "2028-01-01", "2028-02-01", "2028-03-01", "2028-04-01", "2028-05-01", "2028-06-01", "2028-07-01", "2028-08-01", "2028-09-01", "2028-10-01", "2028-11-01", "2028-12-01", "2029-01-01", "2029-02-01", "2029-03-01", "2029-04-01", "2029-05-01", "2029-06-01", "2029-07-01", "2029-08-01", "2029-09-01", "2029-10-01", "2029-11-01", "2029-12-01", "2030-01-01", "2030-02-01", "2030-03-01", "2030-04-01", "2030-05-01", "2030-06-01", "2030-07-01", "2030-08-01", "2030-09-01", "2030-10-01", "2030-11-01", "2030-12-01"], "actual": [3, 5, 18, 30, 40, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null], "target": [0, 6, 12, 18, 24, 30, 36, 42, 48, 54, 60, 66, 72, 78, 84, 90, 96, 102, 108, 114, 120, 126, 132, 138, 144, 150, 156, 162, 168, 174, 180, 186, 192, 198, 204, 210, 216, 222, 228, 234, 240, 246, 252, 258, 264, 270, 276, 282, 288, 294, 300, 306, 312, 318, 324, 330, 336, 342, 348, 354, 360], "missing": 11}, "unknown_count": 10};
     const c = raw.cumulative;
 
-    new Chart(document.getElementById('chartCumulative'), {
+    const todayStr = new Date().toISOString().slice(0,7); // "YYYY-MM"
+    const idxToday = c.dates.findIndex(d => d.startsWith(todayStr));
+
+    const endIdx = idxToday >= 0 ? idxToday : c.dates.length - 1;
+    const startIdx = Math.max(0, endIdx - 11); // last 12 months
+
+    const minLabel = c.dates[startIdx];
+    const maxLabel = c.dates[endIdx];
+
+    const initialMin = minLabel;
+    const initialMax = maxLabel;
+
+    const chartC = new Chart(document.getElementById('chartCumulative'), {
       type: 'line',
       data: {
         labels: c.dates,
@@ -153,9 +256,50 @@
       },
       options: {
         responsive: true,
-        interaction: { mode: 'index', intersect: false }
+        interaction: { mode: 'index', intersect: false },
+        scales: {
+          x: {
+            min: minLabel,
+            max: maxLabel,
+            ticks: {
+              callback: function(value) {
+                const label = this.getLabelForValue(value); // "YYYY-MM-DD"
+                const [y, m] = label.split("-");
+                const date = new Date(Number(y), Number(m) - 1); // local, no shift
+
+                const month = date.toLocaleString(undefined, { month: 'short' });
+                const year = String(y).slice(2);
+
+                return month + " '" + year;
+              }
+            }
+          }
+        }
       }
     });
+
+    window.showFull = function() {
+      chartC.options.scales.x.min = undefined;
+      chartC.options.scales.x.max = undefined;
+      chartC.update();
+    };
+
+    let isFull = false;
+
+    window.toggleZoom = function() {
+      if (!isFull) {
+        chartC.options.scales.x.min = undefined;
+        chartC.options.scales.x.max = undefined;
+        document.getElementById("toggleZoom").textContent = "Show Recent";
+      } else {
+        chartC.options.scales.x.min = initialMin;
+        chartC.options.scales.x.max = initialMax;
+        document.getElementById("toggleZoom").textContent = "Show Full";
+      }
+
+      chartC.update();
+      isFull = !isFull;
+    };
 
     // missing note
     if (c.missing > 0) {
@@ -173,14 +317,26 @@
         datasets: [
           {
             type: 'bar',
-            label: 'Count',
-            data: [t.contacted, t.enrolled, t.visits],
-            backgroundColor: ['#36a2eb','#4bc0c0','#ff9f40']
+            label: '# Contacted',
+            data: [t.contacted, null, null],
+            backgroundColor: '#36a2eb'
+          },
+          {
+            type: 'bar',
+            label: '# Enrolled',
+            data: [0, t.enrolled, 0],
+            backgroundColor: '#4bc0c0'
+          },
+          {
+            type: 'bar',
+            label: '# Visits',
+            data: [0, 0, t.visits],
+            backgroundColor: '#ff9f40'
           },
           {
             type: 'line',
             label: '% Enrolled',
-            data: [null, t.pct, null],       // only show at the "Enrolled" tick
+            data: [null, t.pct, null],
             borderColor: '#9966ff',
             backgroundColor: 'rgba(153,102,255,0.2)',
             yAxisID: 'pctAxis',
@@ -193,7 +349,12 @@
         responsive: true,
         interaction: { mode: 'index', intersect: false },
         scales: {
+          x: {
+            stacked: true,
+            ticks: { maxTicksLimit: window.innerWidth < 500 ? 6 : 10 }
+          },
           y: {
+            stacked: true,
             beginAtZero: true,
             position: 'left',
             title: { display: true, text: 'Count' }
@@ -208,7 +369,16 @@
         },
         plugins: {
           title: { display: false },
-          legend: { position: 'bottom' }
+          legend: { position: 'bottom' },
+          tooltip: {
+            filter: function(context) {
+              const value = context.raw;
+              // keep line dataset (% enrolled)
+              if (context.dataset.type === 'line') return true;
+              // hide zero bars
+              return value !== 0 && value !== null && value !== undefined;
+            }
+          }
         }
       }
     });
@@ -257,6 +427,9 @@
         responsive: true,
         interaction: { mode: 'index', intersect: false },
         scales: {
+          x: {
+            ticks: { maxTicksLimit: window.innerWidth < 500 ? 6 : 10 }
+          },
           y: {
             beginAtZero: true,
             position: 'left',
