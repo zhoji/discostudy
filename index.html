@@ -189,7 +189,7 @@
 </head>
 <body>
   <h1>DISCO Enrollment Dashboard</h1>
-  <p class="timestamp">Last updated: 2026-04-29 15:27:12</p>
+  <p class="timestamp">Last updated: 2026-04-29 16:48:19</p>
 
   <div class="chart-box" style="max-width:900px;margin:0 auto 2em;">
     <h2>Cumulative Enrollment</h2>
@@ -290,10 +290,24 @@
               callback: function(value) {
                 const label = this.getLabelForValue(value); // "YYYY-MM-DD"
                 const [y, m] = label.split("-");
-                const date = new Date(Number(y), Number(m) - 1); // local, no shift
-
+                const date = new Date(Number(y), Number(m) - 1);
                 const month = date.toLocaleString(undefined, { month: 'short' });
                 const year = String(y).slice(2);
+
+                return month + " '" + year;
+              }
+            }
+          }
+        },
+        plugins: {
+          tooltip: {
+            callbacks: {
+              title: function(items) {
+                const label = items[0].label; // "YYYY-MM-DD"
+                const [y, m] = label.split("-");
+                const date = new Date(Number(y), Number(m) - 1);
+                const month = date.toLocaleString(undefined, { month: 'short' });
+                const year = String(y).slice(2); 
 
                 return month + " '" + year;
               }
